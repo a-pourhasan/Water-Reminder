@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NotificationSettings, UserProfile, Gender, Season } from '../types';
 import { calculateDailyWaterGoal } from '../utils/waterCalculator';
 
@@ -29,6 +30,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onClose,
   onSave,
 }) => {
+  const insets = useSafeAreaInsets();
+
   const [activeTab, setActiveTab] = useState<'notifications' | 'profile'>(
     'notifications',
   );
@@ -82,7 +85,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.overlay}
       >
-        <View style={styles.container}>
+        <View
+          style={[
+            styles.container,
+            { paddingBottom: Math.max(insets.bottom, 28) },
+          ]}
+        >
           {/* نوار جابجایی تب‌ها */}
           <View style={styles.tabBar}>
             <Pressable
@@ -268,7 +276,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
                 {/* انتخاب جنسیت */}
                 <Text style={[styles.label, { marginTop: 14 }]}>Gender</Text>
-                <View style={styles.row}>
+                <View style={styles.rowGender}>
                   {(['male', 'female'] as Gender[]).map((item) => (
                     <Pressable
                       key={item}
@@ -335,7 +343,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <Text style={styles.cancelBtnText}>Cancel</Text>
             </Pressable>
             <Pressable style={styles.saveBtn} onPress={handleSave}>
-              <Text style={styles.saveBtnText}>Save Changes</Text>
+              <Text style={styles.saveBtnText}>Save</Text>
             </Pressable>
           </View>
         </View>
@@ -355,7 +363,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 20,
-    paddingBottom: 28,
     maxHeight: '85%',
   },
   tabBar: {
@@ -396,6 +403,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 4,
+  },
+  rowGender: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingVertical: 4,
+    gap: 8,
   },
   label: {
     fontSize: 14,
@@ -495,7 +509,7 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     gap: 12,
     marginTop: 18,
   },

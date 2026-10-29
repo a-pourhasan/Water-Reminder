@@ -10,6 +10,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NotificationSettings, UserProfile, Gender, Season } from '../types';
@@ -79,291 +80,306 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   if (!visible) return null;
 
-  return (
-    <Modal visible={visible} transparent animationType="slide">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.overlay}
-      >
-        <View
-          style={[
-            styles.container,
-            { paddingBottom: Math.max(insets.bottom, 28) },
-          ]}
-        >
-          {/* نوار جابجایی تب‌ها */}
-          <View style={styles.tabBar}>
-            <Pressable
-              style={[
-                styles.tabBtn,
-                activeTab === 'notifications' && styles.tabBtnActive,
-              ]}
-              onPress={() => setActiveTab('notifications')}
-            >
-              <Text
-                style={[
-                  styles.tabBtnText,
-                  activeTab === 'notifications' && styles.tabBtnTextActive,
-                ]}
-              >
-                🔔 Notifications
-              </Text>
-            </Pressable>
+  const modalContent = (
+    <View style={styles.overlay}>
+      {/* لمس فضای تیره بالا پنجره را می‌بندد */}
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.backdropClickArea} />
+      </TouchableWithoutFeedback>
 
-            <Pressable
-              style={[
-                styles.tabBtn,
-                activeTab === 'profile' && styles.tabBtnActive,
-              ]}
-              onPress={() => setActiveTab('profile')}
-            >
-              <Text
-                style={[
-                  styles.tabBtnText,
-                  activeTab === 'profile' && styles.tabBtnTextActive,
-                ]}
-              >
-                👤 Profile
-              </Text>
-            </Pressable>
-          </View>
-
-          <ScrollView
-            style={styles.scrollArea}
-            showsVerticalScrollIndicator={false}
+      {/* کانتینر سفید مماس به کف بدون فاصله اضافی */}
+      <View style={[styles.container, { paddingBottom: insets.bottom }]}>
+        {/* نوار جابجایی تب‌ها */}
+        <View style={styles.tabBar}>
+          <Pressable
+            style={[
+              styles.tabBtn,
+              activeTab === 'notifications' && styles.tabBtnActive,
+            ]}
+            onPress={() => setActiveTab('notifications')}
           >
-            {activeTab === 'notifications' ? (
-              /* تب نوتیفیکیشن */
-              <View>
-                <View style={styles.row}>
-                  <View>
-                    <Text style={styles.label}>Enable Reminders</Text>
-                    <Text style={styles.subLabel}>
-                      Periodic alerts throughout the day
-                    </Text>
-                  </View>
-                  <Switch
-                    value={settings.enabled}
-                    onValueChange={(val) =>
-                      setSettings((prev) => ({ ...prev, enabled: val }))
-                    }
-                    trackColor={{ false: '#cbd5e1', true: '#38bdf8' }}
-                    thumbColor={settings.enabled ? '#0284c7' : '#f8fafc'}
-                  />
-                </View>
+            <Text
+              style={[
+                styles.tabBtnText,
+                activeTab === 'notifications' && styles.tabBtnTextActive,
+              ]}
+            >
+              🔔 Notifications
+            </Text>
+          </Pressable>
 
-                {settings.enabled && (
-                  <>
-                    <View style={styles.divider} />
-                    <View style={styles.row}>
-                      <View>
-                        <Text style={styles.label}>Notification Sound</Text>
-                        <Text style={styles.subLabel}>
-                          {settings.soundEnabled
-                            ? 'Sound enabled'
-                            : 'Muted (Silent)'}
-                        </Text>
-                      </View>
-                      <Switch
-                        value={settings.soundEnabled}
-                        onValueChange={(val) =>
-                          setSettings((prev) => ({
-                            ...prev,
-                            soundEnabled: val,
-                          }))
-                        }
-                        trackColor={{ false: '#cbd5e1', true: '#38bdf8' }}
-                        thumbColor={
-                          settings.soundEnabled ? '#0284c7' : '#f8fafc'
-                        }
-                      />
-                    </View>
-
-                    <View style={styles.divider} />
-
-                    <Text style={[styles.label, { marginBottom: 10 }]}>
-                      Reminder Frequency
-                    </Text>
-                    <View style={styles.frequencyGroup}>
-                      <Pressable
-                        style={[
-                          styles.freqOption,
-                          settings.frequency === 'once_daily' &&
-                            styles.freqOptionActive,
-                        ]}
-                        onPress={() =>
-                          setSettings((prev) => ({
-                            ...prev,
-                            frequency: 'once_daily',
-                          }))
-                        }
-                      >
-                        <Text
-                          style={[
-                            styles.freqText,
-                            settings.frequency === 'once_daily' &&
-                              styles.freqTextActive,
-                          ]}
-                        >
-                          Once a day
-                        </Text>
-                      </Pressable>
-
-                      <Pressable
-                        style={[
-                          styles.freqOption,
-                          settings.frequency === 'three_daily' &&
-                            styles.freqOptionActive,
-                        ]}
-                        onPress={() =>
-                          setSettings((prev) => ({
-                            ...prev,
-                            frequency: 'three_daily',
-                          }))
-                        }
-                      >
-                        <Text
-                          style={[
-                            styles.freqText,
-                            settings.frequency === 'three_daily' &&
-                              styles.freqTextActive,
-                          ]}
-                        >
-                          3 times a day
-                        </Text>
-                      </Pressable>
-
-                      <Pressable
-                        style={[
-                          styles.freqOption,
-                          settings.frequency === 'every_2h' &&
-                            styles.freqOptionActive,
-                        ]}
-                        onPress={() =>
-                          setSettings((prev) => ({
-                            ...prev,
-                            frequency: 'every_2h',
-                          }))
-                        }
-                      >
-                        <Text
-                          style={[
-                            styles.freqText,
-                            settings.frequency === 'every_2h' &&
-                              styles.freqTextActive,
-                          ]}
-                        >
-                          Every 2h
-                        </Text>
-                      </Pressable>
-                    </View>
-                  </>
-                )}
-              </View>
-            ) : (
-              /* تب مشخصات کاربری */
-              <View>
-                {/* انتخاب سن */}
-                <Text style={styles.label}>Age</Text>
-                <TextInput
-                  style={styles.input}
-                  value={age}
-                  onChangeText={setAge}
-                  keyboardType="numeric"
-                  placeholder="25"
-                  placeholderTextColor="#94a3b8"
-                />
-
-                {/* انتخاب جنسیت */}
-                <Text style={[styles.label, { marginTop: 14 }]}>Gender</Text>
-                <View style={styles.rowGender}>
-                  {(['male', 'female'] as Gender[]).map((item) => (
-                    <Pressable
-                      key={item}
-                      style={[
-                        styles.chip,
-                        gender === item && styles.chipActive,
-                      ]}
-                      onPress={() => setGender(item)}
-                    >
-                      <Text
-                        style={[
-                          styles.chipText,
-                          gender === item && styles.chipTextActive,
-                        ]}
-                      >
-                        {item.toUpperCase()}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
-
-                {/* انتخاب فصل */}
-                <Text style={[styles.label, { marginTop: 14 }]}>
-                  Current Season
-                </Text>
-                <View style={styles.row}>
-                  {seasons.map((item) => (
-                    <Pressable
-                      key={item}
-                      style={[
-                        styles.chip,
-                        season === item && styles.chipActive,
-                      ]}
-                      onPress={() => setSeason(item)}
-                    >
-                      <Text
-                        style={[
-                          styles.chipText,
-                          season === item && styles.chipTextActive,
-                        ]}
-                      >
-                        {item.toUpperCase()}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
-
-                {/* پیش‌نمایش هدف جدید */}
-                <View style={styles.goalPreviewBox}>
-                  <Text style={styles.goalPreviewTitle}>
-                    Calculated Daily Goal:
-                  </Text>
-                  <Text style={styles.goalPreviewValue}>
-                    {computedDailyGoal} ml
-                  </Text>
-                </View>
-              </View>
-            )}
-          </ScrollView>
-
-          {/* کلیدهای انصراف و ذخیره */}
-          <View style={styles.buttonRow}>
-            <Pressable style={styles.cancelBtn} onPress={onClose}>
-              <Text style={styles.cancelBtnText}>Cancel</Text>
-            </Pressable>
-            <Pressable style={styles.saveBtn} onPress={handleSave}>
-              <Text style={styles.saveBtnText}>Save</Text>
-            </Pressable>
-          </View>
+          <Pressable
+            style={[
+              styles.tabBtn,
+              activeTab === 'profile' && styles.tabBtnActive,
+            ]}
+            onPress={() => setActiveTab('profile')}
+          >
+            <Text
+              style={[
+                styles.tabBtnText,
+                activeTab === 'profile' && styles.tabBtnTextActive,
+              ]}
+            >
+              👤 Profile
+            </Text>
+          </Pressable>
         </View>
-      </KeyboardAvoidingView>
+
+        <ScrollView
+          style={styles.scrollArea}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {activeTab === 'notifications' ? (
+            /* تب نوتیفیکیشن */
+            <View>
+              <View style={styles.row}>
+                <View>
+                  <Text style={styles.label}>Enable Reminders</Text>
+                  <Text style={styles.subLabel}>
+                    Periodic alerts throughout the day
+                  </Text>
+                </View>
+                <Switch
+                  value={settings.enabled}
+                  onValueChange={(val) =>
+                    setSettings((prev) => ({ ...prev, enabled: val }))
+                  }
+                  trackColor={{ false: '#cbd5e1', true: '#38bdf8' }}
+                  thumbColor={settings.enabled ? '#0284c7' : '#f8fafc'}
+                />
+              </View>
+
+              {settings.enabled && (
+                <>
+                  <View style={styles.divider} />
+                  <View style={styles.row}>
+                    <View>
+                      <Text style={styles.label}>Notification Sound</Text>
+                      <Text style={styles.subLabel}>
+                        {settings.soundEnabled
+                          ? 'Sound enabled'
+                          : 'Muted (Silent)'}
+                      </Text>
+                    </View>
+                    <Switch
+                      value={settings.soundEnabled}
+                      onValueChange={(val) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          soundEnabled: val,
+                        }))
+                      }
+                      trackColor={{ false: '#cbd5e1', true: '#38bdf8' }}
+                      thumbColor={settings.soundEnabled ? '#0284c7' : '#f8fafc'}
+                    />
+                  </View>
+
+                  <View style={styles.divider} />
+
+                  <Text style={[styles.label, { marginBottom: 10 }]}>
+                    Reminder Frequency
+                  </Text>
+                  <View style={styles.frequencyGroup}>
+                    <Pressable
+                      style={[
+                        styles.freqOption,
+                        settings.frequency === 'once_daily' &&
+                          styles.freqOptionActive,
+                      ]}
+                      onPress={() =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          frequency: 'once_daily',
+                        }))
+                      }
+                    >
+                      <Text
+                        style={[
+                          styles.freqText,
+                          settings.frequency === 'once_daily' &&
+                            styles.freqTextActive,
+                        ]}
+                      >
+                        Once a day
+                      </Text>
+                    </Pressable>
+
+                    <Pressable
+                      style={[
+                        styles.freqOption,
+                        settings.frequency === 'three_daily' &&
+                          styles.freqOptionActive,
+                      ]}
+                      onPress={() =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          frequency: 'three_daily',
+                        }))
+                      }
+                    >
+                      <Text
+                        style={[
+                          styles.freqText,
+                          settings.frequency === 'three_daily' &&
+                            styles.freqTextActive,
+                        ]}
+                      >
+                        3 times a day
+                      </Text>
+                    </Pressable>
+
+                    <Pressable
+                      style={[
+                        styles.freqOption,
+                        settings.frequency === 'every_2h' &&
+                          styles.freqOptionActive,
+                      ]}
+                      onPress={() =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          frequency: 'every_2h',
+                        }))
+                      }
+                    >
+                      <Text
+                        style={[
+                          styles.freqText,
+                          settings.frequency === 'every_2h' &&
+                            styles.freqTextActive,
+                        ]}
+                      >
+                        Every 2h
+                      </Text>
+                    </Pressable>
+                  </View>
+                </>
+              )}
+            </View>
+          ) : (
+            /* تب مشخصات کاربری */
+            <View>
+              {/* انتخاب سن */}
+              <Text style={styles.label}>Age</Text>
+              <TextInput
+                style={styles.input}
+                value={age}
+                onChangeText={setAge}
+                keyboardType="numeric"
+                placeholder="25"
+                placeholderTextColor="#94a3b8"
+              />
+
+              {/* انتخاب جنسیت */}
+              <Text style={[styles.label, { marginTop: 14 }]}>Gender</Text>
+              <View style={styles.rowGender}>
+                {(['male', 'female'] as Gender[]).map((item) => (
+                  <Pressable
+                    key={item}
+                    style={[styles.chip, gender === item && styles.chipActive]}
+                    onPress={() => setGender(item)}
+                  >
+                    <Text
+                      style={[
+                        styles.chipText,
+                        gender === item && styles.chipTextActive,
+                      ]}
+                    >
+                      {item.toUpperCase()}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+
+              {/* انتخاب فصل */}
+              <Text style={[styles.label, { marginTop: 14 }]}>
+                Current Season
+              </Text>
+              <View style={styles.row}>
+                {seasons.map((item) => (
+                  <Pressable
+                    key={item}
+                    style={[styles.chip, season === item && styles.chipActive]}
+                    onPress={() => setSeason(item)}
+                  >
+                    <Text
+                      style={[
+                        styles.chipText,
+                        season === item && styles.chipTextActive,
+                      ]}
+                    >
+                      {item.toUpperCase()}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+
+              {/* پیش‌نمایش هدف جدید */}
+              <View style={styles.goalPreviewBox}>
+                <Text style={styles.goalPreviewTitle}>
+                  Calculated Daily Goal:
+                </Text>
+                <Text style={styles.goalPreviewValue}>
+                  {computedDailyGoal} ml
+                </Text>
+              </View>
+            </View>
+          )}
+        </ScrollView>
+
+        {/* کلیدهای انصراف و ذخیره */}
+        <View style={styles.buttonRow}>
+          <Pressable style={styles.cancelBtn} onPress={onClose}>
+            <Text style={styles.cancelBtnText}>Cancel</Text>
+          </Pressable>
+          <Pressable style={styles.saveBtn} onPress={handleSave}>
+            <Text style={styles.saveBtnText}>Save</Text>
+          </Pressable>
+        </View>
+      </View>
+    </View>
+  );
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      {Platform.OS === 'ios' ? (
+        <KeyboardAvoidingView behavior="padding" style={styles.flexOne}>
+          {modalContent}
+        </KeyboardAvoidingView>
+      ) : (
+        modalContent
+      )}
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  flexOne: {
+    flex: 1,
+  },
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(15, 23, 42, 0.5)',
     justifyContent: 'flex-end',
   },
+  backdropClickArea: {
+    flex: 1,
+    width: '100%',
+  },
   container: {
     backgroundColor: '#ffffff',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 24,
     maxHeight: '85%',
+    width: '100%',
   },
   tabBar: {
     flexDirection: 'row',
@@ -510,7 +526,7 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 12,
+    gap: 16,
     marginTop: 18,
   },
   cancelBtn: {

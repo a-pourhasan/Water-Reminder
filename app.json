@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0284c7"
+      "backgroundColor": "#f8fafc"
     },
     "ios": {
       "supportsTablet": true,
@@ -19,7 +19,12 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0284c7"
+        "backgroundColor": "#f8fafc"
+      },
+      "splash": {
+        "image": "./assets/splash-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#f8fafc"
       },
       "package": "com.amir.waterreminder"
     },
@@ -34,7 +39,15 @@
         {
           "backgroundColor": "#f8fafc",
           "image": "./assets/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 160
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/splash-icon.png",
+          "color": "#0284c7",
+          "sounds": ["./assets/water_drop.wav"]
         }
       ]
     ],

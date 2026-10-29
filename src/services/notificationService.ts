@@ -2,7 +2,9 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { NotificationSettings } from '../types';
 
-const CHANNEL_ID = 'water-reminder-headsup';
+// تغییر شناسه کانال برای بازنشانی و ثبت صدای سفارشی جدید در اندروید
+const CHANNEL_ID = 'water-reminder-droplet-v1';
+const CUSTOM_SOUND = 'water_drop.wav';
 
 // نحوه رفتار نوتیفیکیشن در زمان باز بودن برنامه
 Notifications.setNotificationHandler({
@@ -20,11 +22,10 @@ Notifications.setNotificationHandler({
 });
 
 /**
- * ایجاد کانال اختصاصی اندروید با اولویت MAX (ضروری برای ظاهر پیامکی / Heads-up)
+ * ایجاد کانال اختصاصی اندروید با اولویت MAX و صدای قطره آب
  */
 async function setupNotificationChannel(soundEnabled: boolean) {
   if (Platform.OS === 'android') {
-    // تنظیم شیء کانال بر اساس وضعیت صدا به شکلی که هیچ مقدار undefined به نیتیو ارسال نشود
     const channelOptions: Notifications.NotificationChannelInput = {
       name: 'Water Intake Reminders',
       importance: Notifications.AndroidImportance.MAX,
@@ -32,7 +33,7 @@ async function setupNotificationChannel(soundEnabled: boolean) {
       vibrationPattern: [0, 250, 250, 250],
       lightColor: '#0284c7',
       showBadge: true,
-      sound: soundEnabled ? 'default' : null, // در اندروید برای بی‌صدا بودن باید دقیقاً null باشد
+      sound: soundEnabled ? CUSTOM_SOUND : null, // اتصال به فایل صدای سفارشی
     };
 
     try {
@@ -104,7 +105,7 @@ export async function applyNotificationSettings(
     content: {
       title: 'وقت نوشیدن آبه! 💧',
       body: 'بدنت به آب نیاز داره؛ یک لیوان آب تازه بنوش.',
-      sound: settings.soundEnabled ? 'default' : false, // 👈 استفاده از false به جای null
+      sound: settings.soundEnabled ? CUSTOM_SOUND : false, // پخش صدای قطره آب
       priority: Notifications.AndroidNotificationPriority.MAX,
       data: { silent: !settings.soundEnabled },
       color: '#0284c7',
@@ -133,7 +134,7 @@ export async function triggerTestBanner(
     content: {
       title: 'It’s time to drink water! 💧',
       body: 'You’re not a cactus! 🌵',
-      sound: settings.soundEnabled ? 'default' : false, // 👈 استفاده از false به جای null
+      sound: settings.soundEnabled ? CUSTOM_SOUND : false, // پخش صدای قطره آب
       priority: Notifications.AndroidNotificationPriority.MAX,
       data: { silent: !settings.soundEnabled },
       color: '#0284c7',

@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 16,
     padding: 16,
-    marginVertical: 16,
+    marginVertical: 12,
     width: '100%',
     maxWidth: 360,
     borderWidth: 1,
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    height: 120,
+    height: 110,
     paddingHorizontal: 6,
   },
   col: {
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   },
   barTrack: {
     width: 14,
-    height: 80,
+    height: 75,
     backgroundColor: '#f1f5f9',
     borderRadius: 7,
     justifyContent: 'flex-end',

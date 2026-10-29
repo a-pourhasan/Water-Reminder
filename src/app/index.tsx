@@ -243,11 +243,19 @@ export default function HomeScreen() {
                 />
               </View>
 
-              <WeeklyHistory history={history} />
-
               <Pressable style={styles.resetBtn} onPress={handleResetWater}>
                 <Text style={styles.resetBtnText}>Reset Today</Text>
               </Pressable>
+
+              <WeeklyHistory history={history} />
+
+              {/* فوتر نام برند و کپی‌رایت */}
+              <View style={styles.footerContainer}>
+                <Text style={styles.footerBrand}>SUNAP Studio LLC</Text>
+                <Text style={styles.footerCopyright}>
+                  Version 1.0.0 • © 2026 All rights reserved
+                </Text>
+              </View>
             </View>
           )}
         </ScrollView>
@@ -329,14 +337,29 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   resetBtn: {
-    marginTop: 12,
-    marginBottom: 20,
-    paddingVertical: 8,
+    marginTop: 16,
+    marginBottom: 12,
     paddingHorizontal: 16,
   },
   resetBtnText: {
     color: '#ef4444',
     fontSize: 13,
     fontWeight: '600',
+  },
+  footerContainer: {
+    alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 20,
+  },
+  footerBrand: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#64748b',
+    letterSpacing: 0.6,
+  },
+  footerCopyright: {
+    fontSize: 10,
+    color: '#94a3b8',
+    marginTop: 3,
   },
 });

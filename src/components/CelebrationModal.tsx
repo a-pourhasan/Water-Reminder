@@ -1,5 +1,12 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Text, Pressable, Dimensions } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Pressable,
+  Dimensions,
+  Modal,
+} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -104,11 +111,9 @@ export const CelebrationModal: React.FC<CelebrationModalProps> = ({
 
   useEffect(() => {
     if (visible) {
-      // شلیک ویبره الگوی موفقیت‌آمیز گوشی
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(
         () => {},
       );
-
       scale.value = withSpring(1, { damping: 12, stiffness: 140 });
       opacity.value = withTiming(1, { duration: 250 });
     } else {
@@ -125,13 +130,20 @@ export const CelebrationModal: React.FC<CelebrationModalProps> = ({
   if (!visible) return null;
 
   return (
-    <View style={styles.overlay} pointerEvents="box-none">
-      {/* تولید ۳۵ تکه کاغذ رنگی معلق */}
-      {Array.from({ length: 35 }).map((_, i) => (
-        <ConfettiPiece key={i} index={i} />
-      ))}
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      statusBarTranslucent
+      onRequestClose={onClose}
+    >
+      <View style={styles.backdrop}>
+        {/* دانه‌های کاغذ رنگی جشن */}
+        {Array.from({ length: 40 }).map((_, i) => (
+          <ConfettiPiece key={i} index={i} />
+        ))}
 
-      <View style={styles.centerContainer}>
+        {/* کادر تبریک در مرکز صفحه */}
         <Animated.View style={[styles.dialogCard, cardStyle]}>
           <Text style={styles.trophy}>🏆</Text>
           <Text style={styles.congratsTitle}>Goal Accomplished!</Text>
@@ -140,20 +152,19 @@ export const CelebrationModal: React.FC<CelebrationModalProps> = ({
             <Text style={styles.highlightText}>{dailyGoalMl} ml</Text>.
             Excellent hydration today!
           </Text>
-
           <Pressable style={styles.continueBtn} onPress={onClose}>
             <Text style={styles.continueBtnText}>Awesome!</Text>
           </Pressable>
         </Animated.View>
       </View>
-    </View>
+    </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 99999,
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.65)', // سایه تاریک تمام‌صفحه
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -161,12 +172,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-  },
-  centerContainer: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(15, 23, 42, 0.45)',
   },
   dialogCard: {
     width: '84%',
@@ -177,9 +182,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.25,
     shadowRadius: 20,
-    elevation: 12,
+    elevation: 15,
+    zIndex: 10,
   },
   trophy: {
     fontSize: 54,

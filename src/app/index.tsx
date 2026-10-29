@@ -15,7 +15,6 @@ import { OnboardingForm } from '../components/OnboardingForm';
 import { WaterGallon } from '../components/WaterGallon';
 import { WaterActionButton } from '../components/WaterActionButton';
 import { WeeklyHistory } from '../components/WeeklyHistory';
-import { NotificationBanner } from '../components/NotificationBanner';
 import { SettingsModal } from '../components/SettingsModal';
 import { CelebrationModal } from '../components/CelebrationModal';
 
@@ -54,13 +53,6 @@ export default function HomeScreen() {
     DEFAULT_NOTIFICATION_SETTINGS,
   );
   const [settingsModalOpen, setSettingsModalOpen] = useState<boolean>(false);
-
-  // استیت بنر شناور (Heads-up)
-  const [bannerVisible, setBannerVisible] = useState<boolean>(false);
-  const [bannerContent, setBannerContent] = useState({
-    title: '',
-    message: '',
-  });
 
   const tiltX = useTiltSensor();
 
@@ -108,7 +100,7 @@ export default function HomeScreen() {
     setLastAddedAmount(amountMl);
     const newTotal = dailyState.currentWaterMl + amountMl;
 
-    // اگر قبلاً کمتر از هدف بوده و حالا رسیده یا رد کرده، جشن بگیر
+    // اگر به هدف رسیده یا رد کرده باشد، جشن می‌گیرد
     if (
       dailyState.currentWaterMl < profile.dailyGoalMl &&
       newTotal >= profile.dailyGoalMl
@@ -151,11 +143,9 @@ export default function HomeScreen() {
     await saveNotificationSettings(newSettings);
     await applyNotificationSettings(newSettings);
 
+    // ارسال اعلان تست فقط از طریق سیستم‌عامل (Heads-up)
     if (newSettings.enabled) {
-      triggerTestBanner(newSettings, (title, message) => {
-        setBannerContent({ title, message });
-        setBannerVisible(true);
-      });
+      await triggerTestBanner(newSettings);
     }
   };
 
@@ -169,13 +159,6 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <NotificationBanner
-        visible={bannerVisible}
-        title={bannerContent.title}
-        message={bannerContent.message}
-        onDismiss={() => setBannerVisible(false)}
-      />
-
       {profile && (
         <SettingsModal
           visible={settingsModalOpen}
@@ -243,11 +226,11 @@ export default function HomeScreen() {
                 />
               </View>
 
+              <WeeklyHistory history={history} />
+
               <Pressable style={styles.resetBtn} onPress={handleResetWater}>
                 <Text style={styles.resetBtnText}>Reset Today</Text>
               </Pressable>
-
-              <WeeklyHistory history={history} />
 
               {/* فوتر نام برند و کپی‌رایت */}
               <View style={styles.footerContainer}>
@@ -337,8 +320,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   resetBtn: {
-    marginTop: 16,
+    marginTop: 12,
     marginBottom: 12,
+    paddingVertical: 8,
     paddingHorizontal: 16,
   },
   resetBtnText: {
@@ -352,13 +336,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   footerBrand: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '700',
     color: '#64748b',
     letterSpacing: 0.6,
   },
   footerCopyright: {
-    fontSize: 10,
+    fontSize: 11,
     color: '#94a3b8',
     marginTop: 3,
   },

@@ -88,7 +88,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       </TouchableWithoutFeedback>
 
       {/* کانتینر سفید مماس به کف بدون فاصله اضافی */}
-      <View style={[styles.container, { paddingBottom: insets.bottom }]}>
+      <View style={[styles.container, { paddingBottom: insets.bottom + 8 }]}>
         {/* نوار جابجایی تب‌ها */}
         <View style={styles.tabBar}>
           <Pressable

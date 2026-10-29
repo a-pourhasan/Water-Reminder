@@ -2,7 +2,6 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { NotificationSettings } from '../types';
 
-// تغییر شناسه کانال برای بازنشانی و ثبت صدای سفارشی جدید در اندروید
 const CHANNEL_ID = 'water-reminder-droplet-v1';
 const CUSTOM_SOUND = 'water_drop.wav';
 
@@ -14,15 +13,15 @@ Notifications.setNotificationHandler({
       shouldShowAlert: true,
       shouldPlaySound: !isMuted,
       shouldSetBadge: false,
-      shouldShowBanner: true, // نمایش بنر شناور (Heads-up)
-      shouldShowList: true, // نمایش در لیست کشویی نوتیفیکیشن‌ها
+      shouldShowBanner: true, // نمایش نوار باریک شناور سیستمی (Heads-up)
+      shouldShowList: true, // نمایش در لیست کشویی اعلان‌های سیستم
       priority: Notifications.AndroidNotificationPriority.MAX,
     };
   },
 });
 
 /**
- * ایجاد کانال اختصاصی اندروید با اولویت MAX و صدای قطره آب
+ * ایجاد کانال اختصاصی اندروید با اولویت MAX برای ظاهر پیامکی (Heads-up)
  */
 async function setupNotificationChannel(soundEnabled: boolean) {
   if (Platform.OS === 'android') {
@@ -33,7 +32,7 @@ async function setupNotificationChannel(soundEnabled: boolean) {
       vibrationPattern: [0, 250, 250, 250],
       lightColor: '#0284c7',
       showBadge: true,
-      sound: soundEnabled ? CUSTOM_SOUND : null, // اتصال به فایل صدای سفارشی
+      sound: soundEnabled ? CUSTOM_SOUND : null,
     };
 
     try {
@@ -103,9 +102,9 @@ export async function applyNotificationSettings(
 
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: 'وقت نوشیدن آبه! 💧',
-      body: 'بدنت به آب نیاز داره؛ یک لیوان آب تازه بنوش.',
-      sound: settings.soundEnabled ? CUSTOM_SOUND : false, // پخش صدای قطره آب
+      title: 'Time to drink water 💧',
+      body: 'You are not a cactus! 🌵',
+      sound: settings.soundEnabled ? CUSTOM_SOUND : false,
       priority: Notifications.AndroidNotificationPriority.MAX,
       data: { silent: !settings.soundEnabled },
       color: '#0284c7',
@@ -119,10 +118,10 @@ export async function applyNotificationSettings(
   });
 }
 
-export async function triggerTestBanner(
-  settings: NotificationSettings,
-  onShow?: (title: string, message: string, sound: boolean) => void,
-) {
+/**
+ * شلیک نوتیفیکیشن تستی سیستمی (بدون بنر داخلی اپلیکیشن)
+ */
+export async function triggerTestBanner(settings: NotificationSettings) {
   if (!settings.enabled) return;
 
   const hasPermission = await requestNotificationPermission();
@@ -132,9 +131,9 @@ export async function triggerTestBanner(
 
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: 'It’s time to drink water! 💧',
-      body: 'You’re not a cactus! 🌵',
-      sound: settings.soundEnabled ? CUSTOM_SOUND : false, // پخش صدای قطره آب
+      title: 'Water Reminder 💧',
+      body: 'Reminder has been activated!',
+      sound: settings.soundEnabled ? CUSTOM_SOUND : false,
       priority: Notifications.AndroidNotificationPriority.MAX,
       data: { silent: !settings.soundEnabled },
       color: '#0284c7',
@@ -145,12 +144,4 @@ export async function triggerTestBanner(
       channelId: CHANNEL_ID,
     },
   });
-
-  if (onShow) {
-    onShow(
-      'It’s time to drink water! 💧',
-      'You’re not a cactus! 🌵',
-      settings.soundEnabled,
-    );
-  }
 }
